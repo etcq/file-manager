@@ -1,8 +1,10 @@
-import { opendir, readdir } from 'fs/promises';
-import { join } from 'path';
+import { join, isAbsolute } from 'path';
 import { chdir, cwd, stdin, stdout } from 'process';
-import { printTable } from './operations/print';
-import { exitProgram } from './operations/exit';
+import { printTable } from './utils/print.js';
+import { exitProgram } from './utils/exit.js';
+import { changeDirectory } from './utils/cd.js';
+import { parseCommand } from './utils/parse-command.js';
+import { read } from './utils/read.js';
 
 
 const fileManager = async () => {
@@ -12,7 +14,7 @@ const fileManager = async () => {
   console.log(`Welcome to the File Manager, ${user}!`);
   stdout.write('Enter the command, please\n');
   stdin.on('data', async (chunk) => {
-    const command = chunk.toString().trim();
+  const { command, arg } = parseCommand(chunk);
     switch (command) {
       case 'up': {
         chdir(join(cwd(), '..'));
@@ -23,7 +25,15 @@ const fileManager = async () => {
         break;
       }
       case '.exit': {
-        exitProgram();
+        exitProgram(user);
+      }
+      case 'cd': {
+        changeDirectory(arg);
+        break;
+      }
+      case 'cat': {
+        read(arg);
+        break;
       }
       default: {
         console.log(`Invalid input`);
@@ -34,7 +44,7 @@ const fileManager = async () => {
     }
   );
   process.on('SIGINT', () => {
-    exitProgram();
+    exitProgram(user);
   })
 }
 

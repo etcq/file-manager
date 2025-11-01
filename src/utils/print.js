@@ -1,4 +1,5 @@
 import { readdir } from 'fs/promises';
+import { cwd } from 'process';
 
 export const printTable = async () => {
   const folder = await readdir(cwd(), { withFileTypes: true });
