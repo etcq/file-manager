@@ -5,13 +5,16 @@ import { exitProgram } from './utils/exit.js';
 import { changeDirectory } from './utils/cd.js';
 import { parseCommand } from './utils/parse-command.js';
 import { read } from './utils/read.js';
+import { add } from './utils/add.js';
+import { addDir } from './utils/add-dir.js';
+import { rn } from './utils/rename.js';
 
 
 const fileManager = async () => {
   const args =  process.argv.slice(2);
   const user = args.length > 0  ? args[0].split('=')[1] : 'Anonymous';
-  console.log(`You are currently in ${cwd()}`)
-  console.log(`Welcome to the File Manager, ${user}!`);
+  console.log(`You are currently in ${cwd()}\n`);
+  console.log(`Welcome to the File Manager, ${user}!\n`);
   stdout.write('Enter the command, please\n');
   stdin.on('data', async (chunk) => {
   const { command, arg } = parseCommand(chunk);
@@ -32,7 +35,19 @@ const fileManager = async () => {
         break;
       }
       case 'cat': {
-        read(arg);
+        await read(arg);
+        break;
+      }
+      case 'add': {
+        await add(arg);
+        break;
+      }
+      case 'mkdir': {
+        addDir(arg);
+        break;
+      }
+      case 'rn': {
+        rn(arg);
         break;
       }
       default: {
@@ -40,7 +55,7 @@ const fileManager = async () => {
         break;
       }
     }
-      console.log(`You are currently in ${cwd()}`)
+      console.log(`You are currently in ${cwd()} \n`)
     }
   );
   process.on('SIGINT', () => {
